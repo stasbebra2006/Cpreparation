@@ -10,6 +10,31 @@ typedef struct TDice {
 
 size_t countCombinations(TDICE * dice, int from, int to) {
     // TODO
+	int combinations = 0;
+	int DicesCounter = 0;
+	int initialCountOfDices = 10;
+
+	int * set_of_dices = (int *)malloc(initialCountOfDices * sizeof(int));
+	TDICE * current = dice;
+
+	while (current != NULL)
+	{
+		set_of_dices[0] = current->m_Sides;
+		DicesCounter++;
+		if(DicesCounter >= initialCountOfDices)
+		{
+			initialCountOfDices *= 2;
+			set_of_dices = realloc(set_of_dices, initialCountOfDices * sizeof(int));
+		}
+	}
+	//set_of_dices, DicesCounter
+	for(int i = from; i <= to; i++)
+	{
+		for(int j = 0; j < DicesCounter; j++)
+		{
+
+		}	
+	}
 }
 
 #ifndef __TRAINER__
