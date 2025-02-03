@@ -7,51 +7,47 @@ typedef struct TDice {
 } TDICE;
 
 size_t countCombinations(TDICE * dice, int from, int to) {
-    if (from > to) return 0;
+    // Pokud není žádná kostka, jediný možný součet je 0.
+    if (!dice)
+        return (from <= 0 && 0 <= to) ? 1 : 0;
 
-    int DicesCounter = 0;
-    int initialCountOfDices = 10;
-    int * set_of_dices = (int *)malloc(initialCountOfDices * sizeof(int));
+    // Inicializace dynamického pole pro DP.
+    // Na začátku máme pouze jeden způsob, jak získat součet 0.
+    size_t * dp = (size_t*)calloc(1, sizeof(size_t)); 
+    dp[0] = 1;
+    int currentMax = 0;  // maximální dosažitelný součet dosud
+
+    // Projdeme všechny kostky v seznamu.
     TDICE * current = dice;
-
-    while (current != NULL) {
-        if (DicesCounter >= initialCountOfDices) {
-            initialCountOfDices *= 2;
-            set_of_dices = (int *)realloc(set_of_dices, initialCountOfDices * sizeof(int));
-        }
-        set_of_dices[DicesCounter++] = current->m_Sides;
-        current = current->m_Next;
-    }
-
-    int maxSum = 0;
-    for (int i = 0; i < DicesCounter; i++) {
-        maxSum += set_of_dices[i];
-    }
-
-    int * ways = (int *)calloc(maxSum + 1, sizeof(int));
-    ways[0] = 1;
-
-    for (int i = 0; i < DicesCounter; i++) {
-        for (int j = maxSum; j >= set_of_dices[i]; j--) {
-            for (int k = 1; k <= set_of_dices[i]; k++) {
-                if (j >= k) {
-                    ways[j] += ways[j - k];
+    while(current) {
+        int sides = current->m_Sides;
+        int newMax = currentMax + sides;
+        // Alokujeme nové pole pro rozšířenou distribuci součtů.
+        size_t * newdp = (size_t*)calloc(newMax + 1, sizeof(size_t));
+        // Pro každý dosud dosažitelný součet, přičteme hodnotu každé strany aktuální kostky.
+        for (int sum = 0; sum <= currentMax; sum++) {
+            if (dp[sum] != 0) {
+                for (int face = 1; face <= sides; face++) {
+                    newdp[sum + face] += dp[sum];
                 }
             }
         }
+        free(dp);
+        dp = newdp;
+        currentMax = newMax;
+        current = current->m_Next;
     }
 
-    size_t combinations = 0;
-    for (int i = from; i <= to; i++) {
-        if (i <= maxSum) {
-            combinations += ways[i];
-        }
+    // Sečteme počty kombinací pro součty v intervalu [from, to].
+    size_t result = 0;
+    // Součet nelze získat, pokud je nižší než počet kostek (protože každá kostka dává nejméně 1)
+    // ale protože dp bylo vybudováno od 0, jednoduše procházíme od from do to.
+    for (int s = from; s <= to && s <= currentMax; s++) {
+        if (s >= 0)
+            result += dp[s];
     }
-
-    free(set_of_dices);
-    free(ways);
-
-    return combinations;
+    free(dp);
+    return result;
 }
 
 #ifndef __TRAINER__
