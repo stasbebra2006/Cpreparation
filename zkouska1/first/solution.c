@@ -39,11 +39,11 @@ int **read_grid(int **grid, int W, int H, int *error)
 		for (int j = 0; j < W; j++)
 		{
 			int DEI = 0;
-			int test = scanf(" %d", DEI);
+			int test = scanf(" %d", &DEI);
 			if (test != 1)
 			{
 				*error = 1;
-				return;
+				return NULL;
 			}
 			grid[i][j] = DEI;
 		}
@@ -57,7 +57,7 @@ void print_grid(int **grid, int W, int H)
 	{
 		for (int j = 0; j < W; j++)
 		{
-			printf("%d	");
+			printf("%d	", grid[i][j]);
 		}
 		printf("\n");
 	}
