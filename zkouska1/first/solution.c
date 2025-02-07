@@ -43,6 +43,7 @@ int **read_grid(int **grid, int W, int H, int *error)
 			if (test != 1)
 			{
 				*error = 1;
+				free_grid(grid, H);
 				return NULL;
 			}
 			grid[i][j] = DEI;
@@ -80,6 +81,7 @@ int main()
 		printf("Nespravny vstup\n");
 		return 1;
 	}
+
 	// print_grid(grid, W, H);
 	free_grid(grid, H);
 	return 0;
