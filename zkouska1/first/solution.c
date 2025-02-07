@@ -10,7 +10,7 @@ void read_WH(int *W, int *H, int *error)
 		*error = 1;
 		return;
 	}
-	printf("W = %d, H = %d\n", *W, *H);
+	// printf("W = %d, H = %d\n", *W, *H);
 }
 
 int **initialize_grid(int W, int H)
@@ -80,6 +80,7 @@ int main()
 		printf("Nespravny vstup\n");
 		return 1;
 	}
-	print_grid(grid, W, H);
+	// print_grid(grid, W, H);
+	free_grid(grid, H);
 	return 0;
 }
