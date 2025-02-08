@@ -1,6 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int find_min(int W, int H)
+{
+	return (W < H) ? W : H;
+}
+
 void read_WH(int *W, int *H, int *error)
 {
 	printf("Napiste mapu\n");
@@ -43,8 +48,7 @@ int **read_grid(int **grid, int W, int H, int *error)
 			if (test != 1)
 			{
 				*error = 1;
-				free_grid(grid, H);
-				return NULL;
+				return grid;
 			}
 			grid[i][j] = DEI;
 		}
@@ -64,6 +68,31 @@ void print_grid(int **grid, int W, int H)
 	}
 }
 
+void find_biggest_space(int **grid, int W, int H, int DEI)
+{
+	// TODO
+}
+
+void read_DEI(int **grid, int W, int H, int *error)
+{
+	scanf("Napiste minimalni DEI\n");
+	while (1)
+	{
+		int DEI = 0;
+		int test = scanf(" %d", &DEI);
+		if (test != 1)
+		{
+			*error = 1;
+			return;
+		}
+		if (test == EOF)
+		{
+			return;
+		}
+		find_biggest_space(grid, W, H, DEI);
+	}
+}
+
 int main()
 {
 	int error = 0;
@@ -79,9 +108,15 @@ int main()
 	if (error == 1)
 	{
 		printf("Nespravny vstup\n");
+		free_grid(grid, H);
 		return 1;
 	}
-
+	read_DEI(grid, W, H, &error);
+	if (error == 1)
+	{
+		printf("Nespravny vstup\n");
+		return 1;
+	}
 	// print_grid(grid, W, H);
 	free_grid(grid, H);
 	return 0;
