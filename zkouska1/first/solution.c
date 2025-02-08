@@ -37,7 +37,7 @@ void free_grid(int **grid, int H)
 	free(grid);
 }
 
-int **read_grid(int **grid, int W, int H, int *error)
+void read_grid(int **grid, int W, int H, int *error)
 {
 	for (int i = 0; i < H; i++)
 	{
@@ -48,12 +48,11 @@ int **read_grid(int **grid, int W, int H, int *error)
 			if (test != 1)
 			{
 				*error = 1;
-				return grid;
+				return;
 			}
 			grid[i][j] = DEI;
 		}
 	}
-	return grid;
 }
 
 void print_grid(int **grid, int W, int H)
@@ -70,7 +69,8 @@ void print_grid(int **grid, int W, int H)
 
 void find_biggest_space(int **grid, int W, int H, int DEI)
 {
-	// TODO
+	int ** bin = (int **)calloc(H, sizeof(int *));
+
 }
 
 void read_DEI(int **grid, int W, int H, int *error)
@@ -104,7 +104,7 @@ int main()
 		return 1;
 	}
 	int **grid = initialize_grid(W, H);
-	grid = read_grid(grid, W, H, &error);
+	read_grid(grid, W, H, &error);
 	if (error == 1)
 	{
 		printf("Nespravny vstup\n");
