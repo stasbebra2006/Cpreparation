@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct position
+{
+	int x;
+	int y;
+} position;
+
 int find_min(int W, int H)
 {
 	return (W < H) ? W : H;
@@ -15,7 +21,6 @@ void read_WH(int *W, int *H, int *error)
 		*error = 1;
 		return;
 	}
-	// printf("W = %d, H = %d\n", *W, *H);
 }
 
 int **initialize_grid(int W, int H)
@@ -69,13 +74,72 @@ void print_grid(int **grid, int W, int H)
 
 void find_biggest_space(int **grid, int W, int H, int DEI)
 {
-	int ** bin = (int **)calloc(H, sizeof(int *));
-
+	int **bin = (int **)calloc(H, sizeof(int *));
+	for (int i = 0; i < H; i++)
+	{
+		bin[i] = (int *)calloc(W, sizeof(int));
+		for (int j = 0; j < W; j++)
+		{
+			bin[i][j] = (grid[i][j] >= DEI) ? 1 : 0;
+		}
+	}
+	int **dp = (int **)calloc(H, sizeof(int *));
+	for (int i = 0; i < H; i++)
+	{
+		dp[i] = (int *)calloc(W, sizeof(int));
+	}
+	int maxSquare = 0;
+	int countPositions = 0;
+	position *positions = NULL;
+	for (int i = 0; i < H; i++)
+	{
+		for (int j = 0; j < W; j++)
+		{
+			if (i == 0 || j == 0 || bin[i][j] == 0)
+			{
+				dp[i][j] = bin[i][j];
+			}
+			else
+			{
+				int up = dp[i - 1][j];
+				int left = dp[i][j - 1];
+				int diagonal = dp[i - 1][j - 1];
+				dp[i][j] = 1 + find_min(find_min(up, left), diagonal);
+				if (dp[i][j] > maxSquare)
+				{
+					maxSquare = dp[i][j];
+					free(positions);
+					positions = NULL;
+					countPositions = 0;
+				}
+				if (dp[i][j] == maxSquare)
+				{
+					int currentX = i - dp[i][j] + 1;
+					int currentY = j - dp[i][j] + 1;
+					countPositions++;
+					positions = (position *)realloc(positions, countPositions * sizeof(position));
+					positions[countPositions - 1].x = currentX;
+					positions[countPositions - 1].y = currentY;
+				}
+			}
+		}
+	}
+	printf("The biggest square is %dx%d\n", maxSquare, maxSquare);
+	for (int i = 0; i < countPositions; i++)
+	{
+		printf("* (%d,%d)\n", positions[i].x, positions[i].y);
+	}
+	free_grid(bin, H);
+	free_grid(dp, H);
+	if (!positions)
+	{
+		free(positions);
+	}
 }
 
 void read_DEI(int **grid, int W, int H, int *error)
 {
-	scanf("Napiste minimalni DEI\n");
+	printf("Napiste minimalni DEI\n");
 	while (1)
 	{
 		int DEI = 0;
@@ -117,7 +181,6 @@ int main()
 		printf("Nespravny vstup\n");
 		return 1;
 	}
-	// print_grid(grid, W, H);
 	free_grid(grid, H);
 	return 0;
 }
