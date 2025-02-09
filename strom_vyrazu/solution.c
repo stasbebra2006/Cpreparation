@@ -42,7 +42,8 @@ TNode *createNode(int type, double value, TNode *left, TNode *right)
 // free given (sub)tree recursively, including the node
 void freeNode(TNode *node)
 {
-	if(!node) return;
+	if (!node)
+		return;
 	freeNode(node->left);
 	freeNode(node->right);
 	free(node);
@@ -51,13 +52,77 @@ void freeNode(TNode *node)
 // evaluate the tree, return value of expression
 double evaluate(TNode *node)
 {
-	// TODO
+	if (!node)
+	{
+		return NAN;
+	}
+	switch (node->type)
+	{
+	case OP_VALUE:
+		return node->value;
+	case OP_PLUS:
+		return evaluate(node->left) + evaluate(node->right);
+	case OP_MINUS:
+		return evaluate(node->left) - evaluate(node->right);
+	case OP_MULTIPLY:
+		return evaluate(node->left) * evaluate(node->right);
+	case OP_DIVIDE:
+		return evaluate(node->left) / evaluate(node->right);
+	case OP_POWER:
+		return pow(evaluate(node->left), evaluate(node->right));
+	default:
+		return NAN;
+	}
 }
 
 // print the tree
 void print(FILE *f, TNode *node)
 {
-	// TODO
+	if (!node) return;
+
+	switch (node->type)
+	{
+	case OP_VALUE:
+		fprintf(f, "%g", node->value);
+		break;
+	case OP_PLUS:
+		fprintf(f, "(");
+		print(f, node->left);
+		fprintf(f, " + ");
+		print(f, node->right);
+		fprintf(f, ")");
+		break;
+	case OP_MINUS:
+		fprintf(f, "(");
+		print(f, node->left);
+		fprintf(f, " - ");
+		print(f, node->right);
+		fprintf(f, ")");
+		break;
+	case OP_MULTIPLY:
+		fprintf(f, "(");
+		print(f, node->left);
+		fprintf(f, " * ");
+		print(f, node->right);
+		fprintf(f, ")");
+		break;
+	case OP_DIVIDE:
+		fprintf(f, "(");
+		print(f, node->left);
+		fprintf(f, " / ");
+		print(f, node->right);
+		fprintf(f, ")");
+		break;
+	case OP_POWER:
+		fprintf(f, "(");
+		print(f, node->left);
+		fprintf(f, " ^ ");
+		print(f, node->right);
+		fprintf(f, ")");
+		break;
+	default:
+		return;
+	}
 }
 
 #ifndef __TRAINER__
