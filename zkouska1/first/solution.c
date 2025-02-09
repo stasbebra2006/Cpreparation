@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 typedef struct position
 {
@@ -42,7 +43,7 @@ void free_grid(int **grid, int H)
 	free(grid);
 }
 
-void read_grid(int **grid, int W, int H, int *error)
+void read_grid(int **grid, int W, int H, int * minGridValue, int * maxGridValue, int *error)
 {
 	for (int i = 0; i < H; i++)
 	{
@@ -56,6 +57,8 @@ void read_grid(int **grid, int W, int H, int *error)
 				return;
 			}
 			grid[i][j] = DEI;
+			if(DEI > *maxGridValue) *maxGridValue = DEI;
+			if(DEI < *minGridValue) *minGridValue = DEI;
 		}
 	}
 }
@@ -72,8 +75,19 @@ void print_grid(int **grid, int W, int H)
 	}
 }
 
-void find_biggest_space(int **grid, int W, int H, int DEI)
+void find_biggest_space(int **grid, int W, int H, int DEI, int minGridValue, int maxGridValue)
 {
+	if(DEI > maxGridValue)
+	{
+		printf("Nenalezeno!\n");
+		return;
+	}
+	if(DEI < minGridValue)
+	{
+		printf("The biggest square is %dx%d\n", find_min(W,H), find_min(W,H));
+		printf("* (0,0)\n");
+		return;
+	}
 	int **bin = initialize_grid(W, H);
 	for (int i = 0; i < H; i++)
 	{
@@ -139,7 +153,7 @@ void find_biggest_space(int **grid, int W, int H, int DEI)
 	}
 }
 
-void read_DEI(int **grid, int W, int H, int *error)
+void read_DEI(int **grid, int W, int H, int minGridValue, int maxGridValue, int *error)
 {
 	printf("Napiste minimalni DEI\n");
 	while (1)
@@ -155,7 +169,7 @@ void read_DEI(int **grid, int W, int H, int *error)
 			*error = 1;
 			return;
 		}
-		find_biggest_space(grid, W, H, DEI);
+		find_biggest_space(grid, W, H, DEI, minGridValue, maxGridValue);
 	}
 }
 
@@ -170,14 +184,16 @@ int main()
 		return 1;
 	}
 	int **grid = initialize_grid(W, H);
-	read_grid(grid, W, H, &error);
+	int minGridValue = INT_MAX;
+	int maxGridValue = INT_MIN;
+	read_grid(grid, W, H, &minGridValue, &maxGridValue, &error);
 	if (error == 1)
 	{
 		printf("Nespravny vstup\n");
 		free_grid(grid, H);
 		return 1;
 	}
-	read_DEI(grid, W, H, &error);
+	read_DEI(grid, W, H, minGridValue, maxGridValue, &error);
 	if (error == 1)
 	{
 		printf("Nespravny vstup\n");
