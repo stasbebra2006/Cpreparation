@@ -74,10 +74,9 @@ void print_grid(int **grid, int W, int H)
 
 void find_biggest_space(int **grid, int W, int H, int DEI)
 {
-	int **bin = (int **)calloc(H, sizeof(int *));
+	int **bin = initialize_grid(W, H);
 	for (int i = 0; i < H; i++)
 	{
-		bin[i] = (int *)calloc(W, sizeof(int));
 		for (int j = 0; j < W; j++)
 		{
 			bin[i][j] = (grid[i][j] >= DEI) ? 1 : 0;
@@ -101,25 +100,32 @@ void find_biggest_space(int **grid, int W, int H, int DEI)
 				int left = dp[i][j - 1];
 				int diagonal = dp[i - 1][j - 1];
 				dp[i][j] = 1 + find_min(find_min(up, left), diagonal);
-				if (dp[i][j] > maxSquare)
-				{
-					maxSquare = dp[i][j];
-					free(positions);
-					positions = NULL;
-					countPositions = 0;
-				}
-				if (dp[i][j] == maxSquare)
-				{
-					int currentX = i - dp[i][j] + 1;
-					int currentY = j - dp[i][j] + 1;
-					countPositions++;
-					positions = (position *)realloc(positions, countPositions * sizeof(position));
-					positions[countPositions - 1].x = currentX;
-					positions[countPositions - 1].y = currentY;
-				}
+			}
+			if (dp[i][j] > maxSquare)
+			{
+				maxSquare = dp[i][j];
+				free(positions);
+				positions = NULL;
+				countPositions = 0;
+			}
+			if (dp[i][j] == maxSquare)
+			{
+				int currentX = i - dp[i][j] + 1;
+				int currentY = j - dp[i][j] + 1;
+				countPositions++;
+				positions = (position *)realloc(positions, countPositions * sizeof(position));
+				positions[countPositions - 1].x = currentX;
+				positions[countPositions - 1].y = currentY;
 			}
 		}
 	}
+	//
+	// printf("DEI is %d\n", DEI);
+	// printf("bin:\n");
+	// print_grid(bin,W,H);
+	// printf("dp:\n");
+	// print_grid(dp,W,H);
+	//
 	printf("The biggest square is %dx%d\n", maxSquare, maxSquare);
 	for (int i = 0; i < countPositions; i++)
 	{
