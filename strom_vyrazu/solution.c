@@ -42,7 +42,10 @@ TNode *createNode(int type, double value, TNode *left, TNode *right)
 // free given (sub)tree recursively, including the node
 void freeNode(TNode *node)
 {
-	// TODO
+	if(!node) return;
+	freeNode(node->left);
+	freeNode(node->right);
+	free(node);
 }
 
 // evaluate the tree, return value of expression
