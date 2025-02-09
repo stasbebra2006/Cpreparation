@@ -83,11 +83,7 @@ void find_biggest_space(int **grid, int W, int H, int DEI)
 			bin[i][j] = (grid[i][j] >= DEI) ? 1 : 0;
 		}
 	}
-	int **dp = (int **)calloc(H, sizeof(int *));
-	for (int i = 0; i < H; i++)
-	{
-		dp[i] = (int *)calloc(W, sizeof(int));
-	}
+	int **dp = initialize_grid(W, H);
 	int maxSquare = 0;
 	int countPositions = 0;
 	position *positions = NULL;
@@ -131,7 +127,7 @@ void find_biggest_space(int **grid, int W, int H, int DEI)
 	}
 	free_grid(bin, H);
 	free_grid(dp, H);
-	if (!positions)
+	if (positions != NULL)
 	{
 		free(positions);
 	}
@@ -144,13 +140,13 @@ void read_DEI(int **grid, int W, int H, int *error)
 	{
 		int DEI = 0;
 		int test = scanf(" %d", &DEI);
+		if (test == EOF)
+		{
+			return;
+		}
 		if (test != 1)
 		{
 			*error = 1;
-			return;
-		}
-		if (test == EOF)
-		{
 			return;
 		}
 		find_biggest_space(grid, W, H, DEI);
@@ -179,6 +175,7 @@ int main()
 	if (error == 1)
 	{
 		printf("Nespravny vstup\n");
+		free_grid(grid, H);
 		return 1;
 	}
 	free_grid(grid, H);
