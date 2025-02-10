@@ -50,9 +50,9 @@ int evaluate(int *numbers, char opsArray[], int indexOfStart, int indexOfEnd)
 	return result;
 }
 
-void show_string(int *numbers, int numbersCount, char opsArray[], size_t * comboCount)
+void show_string(int *numbers, int numbersCount, char opsArray[], size_t *comboCount)
 {
-	//find_index_of_start
+	// find_index_of_start
 	int indexOfStart = -1;
 	for (int i = 0; i < numbersCount - 1; i++)
 	{
@@ -63,7 +63,9 @@ void show_string(int *numbers, int numbersCount, char opsArray[], size_t * combo
 		}
 	}
 	//
-
+	if (indexOfStart == -1)
+		return;
+	//
 	int left = evaluate(numbers, opsArray, 0, indexOfStart);
 	int right = evaluate(numbers, opsArray, indexOfStart + 1, numbersCount - 1);
 	if (left == right)
@@ -81,10 +83,10 @@ void show_string(int *numbers, int numbersCount, char opsArray[], size_t * combo
 	}
 }
 
-void find_strings(int *numbers, int numbersCount, char opsArray[], int index, size_t * comboCount)
+void find_strings(int *numbers, int numbersCount, char opsArray[], int index, size_t *comboCount)
 {
 	int checkOnlyOne = 0;
-	for (int i = 0; i < numbersCount - 1; i++)
+	for (int i = 0; i < index; i++)
 	{
 		if (opsArray[i] == '=')
 			checkOnlyOne++;
@@ -110,10 +112,11 @@ void find_strings(int *numbers, int numbersCount, char opsArray[], int index, si
 
 void strings_main(int *numbers, int numbersCount)
 {
+	if(numbersCount == 0) return;
 	size_t comboCount = 0;
 	char opsArray[numbersCount - 1];
 	find_strings(numbers, numbersCount, opsArray, 0, &comboCount);
-	printf("CombosCount: %zu\n", comboCount);
+	printf("Celkem: %zu\n", comboCount);
 }
 
 int main()
@@ -126,11 +129,11 @@ int main()
 	read_numbers(numbers, &numbersCount, &error);
 	if (error == 1)
 	{
-		printf("Nespravny vstup\n");
+		printf("Nespravny vstup.\n");
 		free(numbers);
 		return 1;
 	}
-	print_array(numbers, numbersCount);
+	// print_array(numbers, numbersCount);
 	strings_main(numbers, numbersCount);
 	free(numbers);
 	return 0;
