@@ -3,7 +3,7 @@
 
 void read_numbers(int *numbers, int *numbersCount, int *error)
 {
-	printf("write numbers:\n");
+	// printf("write numbers:\n");
 	while (1)
 	{
 		int number = -1;
@@ -112,7 +112,8 @@ void find_strings(int *numbers, int numbersCount, char opsArray[], int index, si
 
 void strings_main(int *numbers, int numbersCount)
 {
-	if(numbersCount == 0) return;
+	if (numbersCount == 0)
+		return;
 	size_t comboCount = 0;
 	char opsArray[numbersCount - 1];
 	find_strings(numbers, numbersCount, opsArray, 0, &comboCount);
@@ -127,7 +128,7 @@ int main()
 	int *numbers = (int *)calloc(51, sizeof(int));
 
 	read_numbers(numbers, &numbersCount, &error);
-	if (error == 1)
+	if (error == 1 || numbersCount < 2)
 	{
 		printf("Nespravny vstup.\n");
 		free(numbers);
