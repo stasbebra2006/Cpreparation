@@ -68,7 +68,7 @@ char *read_name(int *error)
 		printf("position: %d\n", position);
 		//
 		int checkScanf = scanf("%c", &symbol);
-		if (symbol == ' ' || symbol == '\n')
+		if (symbol == ' ' || symbol == '\n' || symbol == EOF)
 		{
 			break;
 		}
@@ -77,6 +77,8 @@ char *read_name(int *error)
 			//
 			printf("this error 2\n");
 			printf("checked char is - \"%c\"\n", symbol);
+			printf("position fale is: %d\n", position);
+			printf("checkScanf = \"%d\"\n", checkScanf);
 			//
 			free(name);
 			*error = 1;
@@ -84,6 +86,12 @@ char *read_name(int *error)
 		}
 		name[position] = symbol;
 		position++;
+	}
+	if(position == 0)
+	{
+		free(name);
+		*error = 1;
+		return NULL;
 	}
 	name[position] = '\0';
 	return name;
@@ -137,6 +145,8 @@ void find_distance_between(station *stationsList, int *error)
 	}
 	printf("first name is %s\n", name1);
 	printf("second name is %s\n", name2);
+	free(name1);
+	free(name2);
 }
 
 void find_the_nearest()
