@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <string.h>
 #include <math.h>
+#include <limits.h>
+#include <float.h>
 
 typedef struct station
 {
@@ -179,6 +181,8 @@ void find_the_nearest(station *stationsList, int *error)
 	int currentX = 0;
 	int currentY = 0;
 	station *holder = calloc(1, sizeof(station));
+	holder->x = currentX;
+	holder->y = currentY;
 	station *nearest = NULL;
 	int checkScanf = scanf(" %d %d", &currentX, &currentY);
 	if (checkScanf != 2)
@@ -190,10 +194,20 @@ void find_the_nearest(station *stationsList, int *error)
 	printf("currentX = %d\n", currentX);
 	printf("currentY = %d\n", currentY);
 	//
+	double distanceMin = DBL_MAX;
 	while (stationsList)
 	{
-		double distanceCurrent = find_distance()
+		double distanceCurrent = find_distance(holder, stationsList);
+		if (distanceCurrent < distanceMin || (distanceCurrent == distanceMin && strcmp(stationsList->name,nearest->name) < 0))
+		{
+			distanceMin = distanceCurrent;
+			nearest = stationsList;
+		}
+		stationsList = stationsList->next;
 	}
+	printf("Nejblizsi: %s %d %d\n", nearest->name, nearest->x, nearest->y);
+	printf("Vzdalenost: %.2f\n", distanceMin);
+	free(holder);
 }
 
 station *crossroad(station *stationsList, int *error)
