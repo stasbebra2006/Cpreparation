@@ -22,6 +22,7 @@ station *station_add(char *name, int x, int y, station *next)
 	newStation->x = x;
 	newStation->y = y;
 	newStation->next = next;
+	return newStation;
 }
 
 void free_stations_list(station *stationsList)
@@ -32,16 +33,33 @@ void free_stations_list(station *stationsList)
 	{
 		station *temp = stationsList;
 		stationsList = stationsList->next;
+		free(temp->name);
 		free(temp);
 	}
 }
 
-char *read_name(char firstInName, int *error)
+void print_stations_list(station *stationsList)
+{
+	if (!stationsList)
+	{
+	}
+	int i = 1;
+	while (stationsList)
+	{
+		printf("station %d\n", i);
+		printf("station name = \n", stationsList->name);
+		printf("station x = \n", stationsList->x);
+		printf("station y = \n", stationsList->y);
+		stationsList = stationsList->next;
+		i++;
+	}
+}
+
+char *read_name(int *error)
 {
 	char symbol;
 	char *name = (char *)calloc(17, sizeof(char));
-	name[0] = firstInName;
-	int position = 1;
+	int position = 0;
 	while (1)
 	{
 		int checkScanf = scanf("%c", symbol);
@@ -62,9 +80,9 @@ char *read_name(char firstInName, int *error)
 	return name;
 }
 
-station *read_station(station *stationsList, char firstInName, int *error)
+station *read_station(station *stationsList, int *error)
 {
-	char *name = read_name(firstInName, error);
+	char *name = read_name(error);
 	if (*error == 1)
 	{
 		return;
@@ -72,6 +90,12 @@ station *read_station(station *stationsList, char firstInName, int *error)
 	int currentX = 0, currentY = 0;
 	int checkScanf = scanf(" %d %d", currentX, currentY);
 	if (checkScanf != 2)
+	{
+		free(name);
+		*error = 1;
+	}
+	stationsList = station_add(stationsList, name, currentX, currentY);
+	return stationsList;
 }
 
 void crossroad(station *stationsList, int *error)
@@ -79,18 +103,25 @@ void crossroad(station *stationsList, int *error)
 	int isListComplited = 0;
 	while (1)
 	{
-		char decisionMaker;
-		int checkScanf = scanf("%c", decisionMaker);
-		if (checkScanf != 1)
+		char decisionMaker = getchar();
+		if (decisionMaker == EOF)
 		{
-			*error = 1;
-			return;
+			if (!stationsList)
+			{
+				*error = 1;
+				return;
+			}
 		}
+		if (decisionMaker == '\n')
+		{
+			continue;
+		}
+		ungetc(decisionMaker, stdin);
 		if (isupper(decisionMaker) || decisionMaker == '/' || isdigit(decisionMaker))
 		{
 			if (isListComplited == 0)
 			{
-				stationsList = read_station(stationsList, decisionMaker, error);
+				stationsList = read_station(stationsList, error);
 				if (*error == 1)
 				{
 					return;
