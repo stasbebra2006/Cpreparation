@@ -55,6 +55,15 @@ void print_stations_list(station *stationsList)
 	}
 }
 
+void find_distance_between()
+{
+	return;
+}
+void find_the_nearest()
+{
+	return;
+}
+
 char *read_name(int *error)
 {
 	char symbol;
