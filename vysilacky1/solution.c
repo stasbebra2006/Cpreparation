@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <math.h>
 
 typedef struct station
 {
@@ -68,7 +69,7 @@ char *read_name(int *error)
 		printf("position: %d\n", position);
 		//
 		int checkScanf = scanf("%c", &symbol);
-		if (symbol == ' ' || symbol == '\n' || symbol == EOF)
+		if (symbol == ' ' || symbol == '\n' || checkScanf == EOF)
 		{
 			break;
 		}
@@ -87,7 +88,7 @@ char *read_name(int *error)
 		name[position] = symbol;
 		position++;
 	}
-	if(position == 0)
+	if (position == 0)
 	{
 		free(name);
 		*error = 1;
@@ -120,10 +121,6 @@ station *read_station(station *stationsList, int *error)
 
 void find_distance_between(station *stationsList, int *error)
 {
-	// char space = getchar();
-	//
-	// printf("getchar is %c\n", space);
-	//
 	if (getchar() != ' ')
 	{
 		*error = 1;
@@ -143,8 +140,30 @@ void find_distance_between(station *stationsList, int *error)
 		free(name2);
 		return;
 	}
+	//
 	printf("first name is %s\n", name1);
 	printf("second name is %s\n", name2);
+	//
+
+	station *station1 = NULL;
+	station *station2 = NULL;
+	while (stationsList)
+	{
+		if (strcmp(stationsList->name, name1) == 0)
+			station1 = stationsList;
+		if (strcmp(stationsList->name, name2) == 0)
+			station2 = stationsList;
+		stationsList = stationsList->next;
+	}
+	if (!station1 || !station2)
+	{
+		printf("Nenalezeno.\n");
+	}
+	else
+	{
+		double distance = sqrt(abs(pow(station2->x - station1->x, 2)) + abs(pow(station2->y - station1->y, 2)));
+		printf("distance between is %.2f\n", distance);
+	}
 	free(name1);
 	free(name2);
 }
