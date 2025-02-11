@@ -15,15 +15,37 @@ station *stations_init()
 	return NULL;
 }
 
-char *read_name(int *error)
+station *station_add(char *name, int x, int y, station *next)
+{
+	station *newStation = (station *)calloc(1, sizeof(station));
+	newStation->name = name;
+	newStation->x = x;
+	newStation->y = y;
+	newStation->next = next;
+}
+
+void free_stations_list(station *stationsList)
+{
+	if (!stationsList)
+		return;
+	while (stationsList)
+	{
+		station *temp = stationsList;
+		stationsList = stationsList->next;
+		free(temp);
+	}
+}
+
+char *read_name(char firstInName, int *error)
 {
 	char symbol;
 	char *name = (char *)calloc(17, sizeof(char));
-	int position = 0;
+	name[0] = firstInName;
+	int position = 1;
 	while (1)
 	{
-		int result = scanf("%c", symbol);
-		if (result != 1 || (symbol != '/' && !isdigit(symbol) && !isupper(symbol)) || position > 16)
+		int checkScanf = scanf("%c", symbol);
+		if (checkScanf != 1 || (symbol != '/' && !isdigit(symbol) && !isupper(symbol)) || position > 16)
 		{
 			free(name);
 			*error = 1;
@@ -40,45 +62,74 @@ char *read_name(int *error)
 	return name;
 }
 
-void read_stations(station *stationList, int *error)
+station *read_station(station *stationsList, char firstInName, int *error)
 {
-	while (1)
+	char *name = read_name(firstInName, error);
+	if (*error == 1)
 	{
-
-		char *name = read_name(error);
-		if (*error = 1)
-		{
-			return;
-		}
-		int currentX = 0, currentY = 0;
-		int result = scanf(" %d %d");
-		if ()
+		return;
 	}
+	int currentX = 0, currentY = 0;
+	int checkScanf = scanf(" %d %d", currentX, currentY);
+	if (checkScanf != 2)
 }
 
-station *station_add(char *name, int x, int y, station *next)
+void crossroad(station *stationsList, int *error)
 {
-	station *newStation = (station *)calloc(1, sizeof(station));
-	newStation->name = name;
-	newStation->x = x;
-	newStation->y = y;
-	newStation->next = next;
+	int isListComplited = 0;
+	while (1)
+	{
+		char decisionMaker;
+		int checkScanf = scanf("%c", decisionMaker);
+		if (checkScanf != 1)
+		{
+			*error = 1;
+			return;
+		}
+		if (isupper(decisionMaker) || decisionMaker == '/' || isdigit(decisionMaker))
+		{
+			if (isListComplited == 0)
+			{
+				stationsList = read_station(stationsList, decisionMaker, error);
+				if (*error == 1)
+				{
+					return;
+				}
+			}
+			else
+			{
+				*error = 1;
+				return;
+			}
+		}
+		else
+		{
+			isListComplited++;
+			switch (decisionMaker)
+			{
+			case '%':
+				find_distance_between();
+				break;
+			case '?':
+				find_the_nearest();
+			default:
+				*error = 1;
+				return;
+			}
+		}
+	}
 }
 
 int main()
 {
 	int error = 0;
 	station *stationsList = stations_init();
-	read_stations(stationsList, &error);
-	if (error = 1)
+	crossroad(stationsList, &error);
+	if (error == 1)
 	{
 		printf("Nespravny vstup.\n");
 		free_stations_list(stationsList);
 		return 1;
-	}
-	answers();
-	if (error = 1)
-	{
 	}
 	free_stations_list(stationsList);
 }
