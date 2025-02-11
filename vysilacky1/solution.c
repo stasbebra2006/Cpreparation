@@ -119,6 +119,11 @@ station *read_station(station *stationsList, int *error)
 	return stationsList;
 }
 
+double find_distance(station *station1, station *station2)
+{
+	return sqrt(abs(pow(station2->x - station1->x, 2)) + abs(pow(station2->y - station1->y, 2)));
+}
+
 void find_distance_between(station *stationsList, int *error)
 {
 	if (getchar() != ' ')
@@ -161,17 +166,34 @@ void find_distance_between(station *stationsList, int *error)
 	}
 	else
 	{
-		double distance = sqrt(abs(pow(station2->x - station1->x, 2)) + abs(pow(station2->y - station1->y, 2)));
+		double distance = find_distance(station1, station2);
 		printf("distance between is %.2f\n", distance);
 	}
 	free(name1);
 	free(name2);
 }
 
-void find_the_nearest()
+void find_the_nearest(station *stationsList, int *error)
 {
 	printf("? is called\n");
-	return;
+	int currentX = 0;
+	int currentY = 0;
+	station *holder = calloc(1, sizeof(station));
+	station *nearest = NULL;
+	int checkScanf = scanf(" %d %d", &currentX, &currentY);
+	if (checkScanf != 2)
+	{
+		*error = 1;
+		return;
+	}
+	//
+	printf("currentX = %d\n", currentX);
+	printf("currentY = %d\n", currentY);
+	//
+	while (stationsList)
+	{
+		double distanceCurrent = find_distance()
+	}
 }
 
 station *crossroad(station *stationsList, int *error)
@@ -236,7 +258,9 @@ station *crossroad(station *stationsList, int *error)
 					return stationsList;
 				break;
 			case '?':
-				find_the_nearest();
+				find_the_nearest(stationsList, error);
+				if (*error == 1)
+					return stationsList;
 				break;
 			default:
 				*error = 1;
