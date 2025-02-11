@@ -15,7 +15,7 @@ station *stations_init()
 	return NULL;
 }
 
-station *station_add(char *name, int x, int y, station *next)
+station *station_add(station *next, char *name, int x, int y)
 {
 	station *newStation = (station *)calloc(1, sizeof(station));
 	newStation->name = name;
@@ -47,9 +47,9 @@ void print_stations_list(station *stationsList)
 	while (stationsList)
 	{
 		printf("station %d\n", i);
-		printf("station name = \n", stationsList->name);
-		printf("station x = \n", stationsList->x);
-		printf("station y = \n", stationsList->y);
+		printf("station name = %s\n", stationsList->name);
+		printf("station x = %d\n", stationsList->x);
+		printf("station y = %d\n", stationsList->y);
 		stationsList = stationsList->next;
 		i++;
 	}
@@ -71,7 +71,7 @@ char *read_name(int *error)
 	int position = 0;
 	while (1)
 	{
-		int checkScanf = scanf("%c", symbol);
+		int checkScanf = scanf("%c", &symbol);
 		if (checkScanf != 1 || (symbol != '/' && !isdigit(symbol) && !isupper(symbol)) || position > 16)
 		{
 			free(name);
@@ -94,10 +94,10 @@ station *read_station(station *stationsList, int *error)
 	char *name = read_name(error);
 	if (*error == 1)
 	{
-		return;
+		return NULL;
 	}
 	int currentX = 0, currentY = 0;
-	int checkScanf = scanf(" %d %d", currentX, currentY);
+	int checkScanf = scanf(" %d %d", &currentX, &currentY);
 	if (checkScanf != 2)
 	{
 		free(name);
@@ -120,6 +120,7 @@ void crossroad(station *stationsList, int *error)
 				*error = 1;
 				return;
 			}
+			return;
 		}
 		if (decisionMaker == '\n')
 		{
@@ -171,5 +172,6 @@ int main()
 		free_stations_list(stationsList);
 		return 1;
 	}
+	print_stations_list(stationsList);
 	free_stations_list(stationsList);
 }
