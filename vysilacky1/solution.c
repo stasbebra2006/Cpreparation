@@ -57,26 +57,6 @@ void print_stations_list(station *stationsList)
 	}
 }
 
-void find_distance_between(station * stationsList, int * error)
-{
-	if(getchar() != ' ')
-	{
-		*error == 1;
-		return;
-	}
-	printf("%% is called\n");
-	char * name1 = read_name(error);
-	if(*error == 1) return;
-	char * name2 = read_name(error);
-	if(*error == 1) return;
-}
-
-void find_the_nearest()
-{
-	printf("? is called\n");
-	return;
-}
-
 char *read_name(int *error)
 {
 	char symbol;
@@ -88,7 +68,7 @@ char *read_name(int *error)
 		printf("position: %d\n", position);
 		//
 		int checkScanf = scanf("%c", &symbol);
-		if (symbol == ' ')
+		if (symbol == ' ' || symbol == '\n')
 		{
 			break;
 		}
@@ -128,6 +108,41 @@ station *read_station(station *stationsList, int *error)
 	}
 	stationsList = station_add(stationsList, name, currentX, currentY);
 	return stationsList;
+}
+
+void find_distance_between(station *stationsList, int *error)
+{
+	// char space = getchar();
+	//
+	// printf("getchar is %c\n", space);
+	//
+	if (getchar() != ' ')
+	{
+		*error = 1;
+		return;
+	}
+	printf("%% is called\n");
+	char *name1 = read_name(error);
+	if (*error == 1)
+	{
+		free(name1);
+		return;
+	}
+	char *name2 = read_name(error);
+	if (*error == 1)
+	{
+		free(name1);
+		free(name2);
+		return;
+	}
+	printf("first name is %s\n", name1);
+	printf("second name is %s\n", name2);
+}
+
+void find_the_nearest()
+{
+	printf("? is called\n");
+	return;
 }
 
 station *crossroad(station *stationsList, int *error)
@@ -182,13 +197,14 @@ station *crossroad(station *stationsList, int *error)
 		{
 			isListComplited++;
 			//
-			printf("isListComplited has changed, it's \"%d\" now", isListComplited);
+			printf("isListComplited has changed, it's \"%d\" now\n", isListComplited);
 			//
 			switch (decisionMaker)
 			{
 			case '%':
 				find_distance_between(stationsList, error);
-				if(error == 1) return stationsList;
+				if (*error == 1)
+					return stationsList;
 				break;
 			case '?':
 				find_the_nearest();
