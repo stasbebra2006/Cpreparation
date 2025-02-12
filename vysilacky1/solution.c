@@ -9,8 +9,8 @@
 typedef struct station
 {
 	char *name;
-	int x;
-	int y;
+	long long int x;
+	long long int y;
 	struct station *next;
 } station;
 
@@ -19,7 +19,7 @@ station *stations_init()
 	return NULL;
 }
 
-station *station_add(station *next, char *name, int x, int y)
+station *station_add(station *next, char *name, long long int x, long long int y)
 {
 	station *newStation = (station *)calloc(1, sizeof(station));
 	newStation->name = name;
@@ -37,7 +37,10 @@ void free_stations_list(station *stationsList)
 	{
 		station *temp = stationsList;
 		stationsList = stationsList->next;
-		free(temp->name);
+		if (temp->name != NULL)
+		{
+			free(temp->name);
+		}
 		free(temp);
 	}
 }
@@ -53,8 +56,8 @@ void print_stations_list(station *stationsList)
 	{
 		printf("station %d\n", i);
 		printf("station name = %s\n", stationsList->name);
-		printf("station x = %d\n", stationsList->x);
-		printf("station y = %d\n", stationsList->y);
+		// printf("station x = %d\n", stationsList->x);
+		// printf("station y = %d\n", stationsList->y);
 		stationsList = stationsList->next;
 		i++;
 	}
@@ -108,14 +111,15 @@ station *read_station(station *stationsList, int *error)
 		//
 		// printf("this error 1\n");
 		//
-		return NULL;
+		return stationsList;
 	}
-	int currentX = 0, currentY = 0;
-	int checkScanf = scanf(" %d %d", &currentX, &currentY);
+	long long int currentX = 0, currentY = 0;
+	int checkScanf = scanf(" %lld %lld", &currentX, &currentY);
 	if (checkScanf != 2)
 	{
 		free(name);
 		*error = 1;
+		return stationsList;
 	}
 	stationsList = station_add(stationsList, name, currentX, currentY);
 	return stationsList;
@@ -215,7 +219,7 @@ void find_the_nearest(station *stationsList, int *error)
 		}
 		stationsList = stationsList->next;
 	}
-	printf("Nejblizsi: %s %d %d\n", nearest->name, nearest->x, nearest->y);
+	printf("Nejblizsi: %s %lld %lld\n", nearest->name, nearest->x, nearest->y);
 	printf("Vzdalenost: %.2f metru\n", distanceMin);
 	free(holder);
 }
@@ -304,10 +308,16 @@ int main()
 	if (error == 1)
 	{
 		printf("Nespravny vstup.\n");
-		free_stations_list(stationsList);
+		if (stationsList != NULL)
+		{
+			free_stations_list(stationsList);
+		}
 		return 1;
 	}
 	// print_stations_list(stationsList);
-	free_stations_list(stationsList);
+	if (stationsList != NULL)
+	{
+		free_stations_list(stationsList);
+	}
 	return 0;
 }
