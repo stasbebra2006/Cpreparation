@@ -238,7 +238,6 @@ station *crossroad(station *stationsList, int *error)
 			if (!stationsList)
 			{
 				*error = 1;
-				return stationsList;
 			}
 			return stationsList;
 		}
@@ -315,9 +314,7 @@ int main()
 		return 1;
 	}
 	// print_stations_list(stationsList);
-	if (stationsList != NULL)
-	{
-		free_stations_list(stationsList);
-	}
+
+	free_stations_list(stationsList);
 	return 0;
 }
