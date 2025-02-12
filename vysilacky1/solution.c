@@ -182,18 +182,24 @@ void find_the_nearest(station *stationsList, int *error)
 	//
 	// printf("? is called\n");
 	//
+	if (!stationsList)
+	{
+		*error = 1;
+		return;
+	}
 	int currentX = 0;
 	int currentY = 0;
-	station *holder = (station *)calloc(1, sizeof(station));
-	holder->x = currentX;
-	holder->y = currentY;
-	station *nearest = stationsList;
 	int checkScanf = scanf(" %d %d", &currentX, &currentY);
 	if (checkScanf != 2)
 	{
 		*error = 1;
 		return;
 	}
+
+	station *nearest = stationsList;
+	station *holder = (station *)calloc(1, sizeof(station));
+	holder->x = currentX;
+	holder->y = currentY;
 	//
 	// printf("currentX = %d\n", currentX);
 	// printf("currentY = %d\n", currentY);
