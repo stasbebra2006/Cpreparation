@@ -6,6 +6,7 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include <algorithm>
 #endif
 
 class Student
@@ -33,8 +34,27 @@ class StudentDatabase
 public:
 	bool addStudent(const Student &student)
 	{
+		for(auto & existingStudent : students_)
+		{
+			if(existingStudent.name() == student.name())
+			{
+				return false;
+			}
+		}
 		students_.push_back(student);
 		return true;
+	}
+
+	const Student * findStudent (const std::string &name) const
+	{
+		for(auto & existingStudent : students_)
+		{
+			if(existingStudent.name() == name)
+			{
+				return &existingStudent;
+			}
+		}
+		return nullptr;
 	}
 
 	size_t getStudentsSize() const
@@ -55,6 +75,7 @@ private:
 };
 
 #ifndef __TRAINER__
+
 int main()
 {
 	std::string name = "John Doe";
@@ -77,18 +98,31 @@ int main()
 	}
 
 	assert(db.getStudentsSize() == testStudentData.size());
+
+	assert(!db.addStudent({"John Doe", 2.0}));
+
+	std::vector<std::pair<Student, bool>> testFindData = {{{"John Doe", 2.4}, true}, {{"John Doee", 2.4}, false}, {{"Jan Novak II", 1.0 + 1e-12}, true}};
+
+	for (const auto &findData : testFindData)
+	{
+		const Student *foundStudent = db.findStudent(findData.first.name());
+		assert((foundStudent != nullptr) == findData.second);
+		if (findData.second)
+		{
+			assert(foundStudent->name() == findData.first.name());
+			assert(foundStudent->average() == findData.first.average());
+		}
+	}
+
 	const StudentDatabase constDb = db;
 
 	std::ostringstream oss;
 	constDb.print(oss);
 	std::string expectedPrint = "Student { John Doe, 2.4 }\nStudent { abc, 3.4901 }\nStudent { Jan Novak II, 1 }\nStudent { $(!+, 4 }\nStudent { , 1.6667 }\n";
 	std::string actualPrint = oss.str();
-	// std::cout << "actualPrint: " << std::endl << actualPrint << std::endl;
-	// std::cout << "expectedPrint" << std::endl << expectedPrint << std::endl; 
 	assert(actualPrint == expectedPrint);
 
 	assert(constDb.getStudentsSize() == testStudentData.size());
-
 	return 0;
 }
 #endif
