@@ -6,7 +6,7 @@
 //size_
 //top const ne
 //a tak dal
-#define LVL 5
+#define LVL 4
 
 struct LinkedList
 {
@@ -50,7 +50,7 @@ struct LinkedList
 		delete tmp;
 		return hodnota;
 	}
-	size_t size()
+	size_t size() const
 	{
 		size_t counter = 0;
 		Node * tmp = head;
@@ -62,10 +62,20 @@ struct LinkedList
 		return counter;
 	}
 
-	T top()
+	T top() const
 	{
 		return head->value;
 	}
+
+	friend std::ostream & operator << (std::ostream & os, const LinkedList & list)
+	{
+		Node * current = list.head;
+		while()
+		{
+			os << list.head -> value << " ";
+			list.head = list.head -> next;
+		}
+	}	
 
 	
 
