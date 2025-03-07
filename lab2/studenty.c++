@@ -36,7 +36,17 @@ private:
 
 class StudentDatabase
 {
+	using StudentWithPos = std::pair<Student, size_t>;
+
+
 public:
+
+	StudentDatabase() = default;
+
+
+	StudentDatabase(const StudentDatabase&) = delete;
+	StudentDatabase& operator = (const StudentDatabase&) = delete;
+
 	size_t getStudentsSize() const
 	{
 		return students_.size();
@@ -92,7 +102,8 @@ public:
 	}
 
 private:
-	std::vector<Student> students_;
+	std::vector<StudentWithPos*> by_name;
+	std::vector<StudentWithPos*> by_pos;
 };
 
 #ifndef __TRAINER__
