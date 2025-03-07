@@ -38,6 +38,10 @@ class StudentDatabase
 {
 	using StudentWithPos = std::pair<Student, size_t>;
 
+	auto find_ (const std::string& name) const {
+		auto it = std::ranges::partition_point(by_name, [&](const StudentWithPos* student) {return student->first.name() < name;});
+	}
+
 
 public:
 
@@ -46,6 +50,10 @@ public:
 
 	StudentDatabase(const StudentDatabase&) = delete;
 	StudentDatabase& operator = (const StudentDatabase&) = delete;
+
+	~StudentDatabase() {
+		for(auto student : by_name) delete student;
+	}
 
 	size_t getStudentsSize() const
 	{
