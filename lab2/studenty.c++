@@ -40,8 +40,15 @@ class StudentDatabase
 
 	auto find_ (const std::string& name) const {
 		auto it = std::ranges::partition_point(by_name, [&](const StudentWithPos* student) {return student->first.name() < name;});
+
+		
+		return std::make_pair(it != by_name.end() && (*it)->first.name() == name, it);
 	}
 
+
+	auto find_pos_(const StudentWithPos* s) {
+		return std::ranges::partition_point(by_pos, [&](const StudentWithPos* x) {return x->second < s->second;});
+	}
 
 public:
 
@@ -57,59 +64,44 @@ public:
 
 	size_t getStudentsSize() const
 	{
-		return students_.size();
+		return by_name.size();
 	}
 
-	bool addStudent(const Student &student)
+	bool addStudent(const Student & s)
 	{
-		for (auto &existingStudent : students_)
-		{
-			if (existingStudent.name() == student.name())
-			{
-				return false;
-			}
-		}
-		students_.push_back(student);
+		auto [succ, it] = find_(s.name());
+		if(succ) return false;
+
+		auto new_student = new StudentWithPos{s, last++};
+		by_name.insert(it, new_student);
+		by_pos.push_back(new_student);
 		return true;
 	}
 
-	const Student *findStudent(const std::string &name) const
+	const Student* findStudent(const std::string &name) const
 	{
-		for (auto &existingStudent : students_)
-		{
-			if (existingStudent.name() == name)
-			{
-				return &existingStudent;
-			}
-		}
-		return nullptr;
+		auto [succ, it] = find_(name);
+		return succ ? &(*it)->first : nullptr;
 	}
 
 	bool deleteStudent(const std::string &name)
 	{
-		for (auto e_student = students_.begin(); e_student != students_.end(); e_student++)
-		{
-			if (e_student->name() == name)
-			{
-				students_.erase(e_student);
-				return true;
-			}
-		}
-		return false;
+		auto [succ ,by_name_it] = find_(name);
+		if (!succ) return false;
+		by_pos.erase(find_pos_(*by_name_it));
+		delete *by_name_it;
+		by_name.erase(by_name_it);
+		return true;
 	}
 
-	void print(std::ostream &out) const
-	{
-		// 	for (const auto &student : students_)
-		// 	{
-		// 		os << "Student { " << student.name() << ", " << std::setprecision(5) << student.average() << " }\n";
-		// 	}
+	void print(std::ostream& out) const {
 		out << std::setprecision(5);
-		for (const auto student : students_)
-			out << student << std::endl;
-	}
+		for (auto&& s : by_pos) out << s->first << "\n";
+	  }
+	
 
 private:
+	size_t last = 0;
 	std::vector<StudentWithPos*> by_name;
 	std::vector<StudentWithPos*> by_pos;
 };
