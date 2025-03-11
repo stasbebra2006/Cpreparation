@@ -10,40 +10,76 @@
 #include <utility>
 #include <vector>
 
-#define LVL 2
+#define LVL 7
 
 struct Set
 {
 	using T = int;
 
-private:
-	auto find_ (const T & value) const {
-		auto found = std::lower_bound(data_.begin(), data_.end(), value);
-		return std::pair{found != data_.end() && *found == value, found};
-	}
-
-	// TODO
-public:
 	bool empty() const { return data_.empty(); }
-
 	size_t size() const { return data_.size(); }
 
 	bool insert(const T &value)
 	{
-		if (contains(value))
+		auto [found, it] = find_(value);
+		if (found)
 			return false;
+		data_.insert(it, value);
+		return true;
+	}
 
-		auto found = std::lower_bound(data_.begin(), data_.end(), value);
-		data_.insert(found, value);
+	bool remove(const T &value)
+	{
+		auto [found, it] = find_(value);
+		if (!found)
+			return false;
+		data_.erase(it);
 		return true;
 	}
 
 	bool contains(const T &value) const
 	{
-		// return std::binary_search(data_.begin(), data_.end(), value);
+		return find_(value).first;
+	}
+
+	friend std::ostream &operator<<(std::ostream &out, const Set &s)
+	{
+		out << "{ ";
+		for (size_t i = 0; i < s.size(); i++)
+		{
+			if (i > 0)
+				out << ", ";
+			out << s.data_[i];
+		}
+		return out << " }";
+	}
+
+	const T &operator[](size_t i) const
+	{
+		if (i >= size())
+			throw std::out_of_range("GET OUT!!!!");
+		return data_[i];
+	}
+
+	explicit operator bool() const
+	{
+		return !empty();
+	}
+
+	Set &operator-=(const Set &b)
+	{
+		std::erase_if(data_, [&](const T &x)
+					  { return b.contains(x); });
 	}
 
 private:
+	std::pair<bool, std::vector<T>::const_iterator> find_(const T &value) const
+	{
+		auto it = std::lower_bound(data_.begin(), data_.end(), value);
+
+		return {it != data_.end() && *it == value, it};
+	}
+
 	std::vector<T> data_;
 };
 
