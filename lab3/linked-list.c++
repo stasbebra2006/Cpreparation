@@ -3,10 +3,10 @@
 #include <cassert>
 #include <memory>
 #include <compare>
-//size_
-//top const ne
-//a tak dal
-#define LVL 4
+// size_
+// top const ne
+// a tak dal
+#define LVL 8
 
 struct LinkedList
 {
@@ -53,8 +53,8 @@ struct LinkedList
 	size_t size() const
 	{
 		size_t counter = 0;
-		Node * tmp = head;
-		while(!(tmp == nullptr))
+		Node *tmp = head;
+		while (!(tmp == nullptr))
 		{
 			counter++;
 			tmp = tmp->next;
@@ -62,22 +62,82 @@ struct LinkedList
 		return counter;
 	}
 
-	T top() const
+	const T &top() const
+	{
+		return head->value;
+	}
+	T &top()
 	{
 		return head->value;
 	}
 
-	friend std::ostream & operator << (std::ostream & os, const LinkedList & list)
+	friend std::ostream &operator<<(std::ostream &os, const LinkedList &list)
 	{
-		Node * current = list.head;
-		while()
+		Node *current = list.head;
+		while (current)
 		{
-			os << list.head -> value << " ";
-			list.head = list.head -> next;
+			if (current != list.head)
+			{
+				os << " ";
+			}
+			os << current->value;
+			current = current->next;
 		}
-	}	
+		return os;
+	}
 
-	
+	LinkedList &operator<<(const T &value)
+	{
+		push(value);
+		return *this;
+	}
+
+	LinkedList &operator>>(T &value)
+	{
+		value = pop();
+		return *this;
+	}
+
+	friend void swap(LinkedList &a, LinkedList &b)
+	{
+		using std::swap;
+		swap(a.head, b.head);
+	}
+
+	LinkedList &operator~()
+	{
+		LinkedList abobik;
+		while (!empty())
+			abobik << pop();
+		swap(*this, abobik);
+		return *this;
+	}
+
+	friend auto operator<=>(const LinkedList &a, const LinkedList &b)
+	{
+		if (a.size() != b.size())
+			return a.size() <=> b.size();
+
+		Node *curr_a = a.head;
+		Node *curr_b = b.head;
+
+		while (curr_a)
+		{
+			auto comparison = curr_a->value <=> curr_b->value;
+			if (comparison != 0)
+				return comparison;
+		}
+
+		curr_a = curr_a->next;
+		curr_b = curr_b->next;
+
+		return std::strong_ordering::equal;
+	}
+
+	friend bool operator==(const LinkedList &a, const LinkedList &b)
+	{
+		return (a <=> b) == 0;
+	}
 
 private:
 	// TODO atributy a dalsi privatni definice
