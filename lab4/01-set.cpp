@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#define LVL 7
+#define LVL 12
 
 struct Set
 {
@@ -70,7 +70,44 @@ struct Set
 	{
 		std::erase_if(data_, [&](const T &x)
 					  { return b.contains(x); });
+		return *this;
 	}
+
+	friend Set operator-(Set a, const Set &b)
+	{
+		a -= b;
+		return a;
+	}
+
+	friend Set operator&(Set a, const Set &b)
+	{
+		a &= b;
+		return a;
+	}
+
+	Set &operator&=(const Set &b)
+	{
+		std::erase_if(data_, [&](const T &x)
+					  { return !b.contains(x); });
+		return *this;
+	}
+
+	friend Set operator|(const Set &a, const Set &b)
+	{
+		Set res;
+		std::ranges::set_union(a.data_, b.data_, std::back_inserter(res.data_));
+		return res;
+	}
+
+	Set &operator|=(const Set &b)
+	{
+		return *this = *this | b;
+	}
+
+	friend auto operator<=>(const Set &a, const Set &b) = default;
+
+	auto begin() const { return data_.begin(); }
+	auto end() const { return data_.end(); }
 
 private:
 	std::pair<bool, std::vector<T>::const_iterator> find_(const T &value) const
@@ -205,8 +242,13 @@ int main()
 	}
 #endif
 
-	// operátory - a -= (rozdíl)
+// operátory - a -= (rozdíl)
 #if LVL >= 8
+	Set B;
+	for (int x : {3, 5, 17, 24})
+		B.insert(x);
+	std::ostringstream out;
+
 	out.str("");
 	out << (A - B);
 	std::cout << out.str() << std::endl;
@@ -216,6 +258,7 @@ int main()
 	out.str("");
 	out << A;
 	assert(out.str() == "{ 0, 2, 4, 42 }");
+	A.insert(5);
 #endif
 
 	// operátory & a &= (průnik)
@@ -225,29 +268,27 @@ int main()
 	std::cout << out.str() << std::endl;
 	assert(out.str() == "{ 5 }");
 
+	Set C;
+	C.insert(15);
+	C.insert(17);
 	out.str("");
 	out << (C &= B);
 	std::cout << out.str() << std::endl;
-	assert(out.str() == "{ 3, 5, 17, 24 }");
+	assert(out.str() == "{ 17 }");
 #endif
 
 	// operátory | a |= (sjednocení)
 #if LVL >= 10
-	Set B;
-	for (int x : {3, 5, 17, 24})
-		B.insert(x);
-	std::ostringstream out;
+	out.str("");
 	out << (A | B);
 	std::cout << out.str() << std::endl;
 	assert(out.str() == "{ 0, 2, 3, 4, 5, 17, 24, 42 }");
 
-	Set C;
-	C.insert(15);
 	C |= B;
 	out.str("");
 	out << C;
 	std::cout << out.str() << std::endl;
-	assert(out.str() == "{ 3, 5, 15, 17, 24 }");
+	assert(out.str() == "{ 3, 5, 17, 24 }");
 #endif
 
 	// operátory porovnání
